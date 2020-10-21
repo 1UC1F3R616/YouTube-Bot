@@ -11,6 +11,7 @@
 import os
 import threading
 from time import sleep
+import logging
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
@@ -18,11 +19,17 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 
 
+# Logging
+filename = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'bot.log')
+logging.basicConfig(filename=filename, filemode='w', format='%(levelname)s - %(asctime)s - %(message)s')
+logger=logging.getLogger()
+logger.setLevel(logging.INFO)
+
 # Configuration
 CHROME_BINARY_PATH = 'chromedriver.exe' # If in the same directory as of this script
-INSTANCES = 2 # Views that you will be getting | This is the number of Threads keep this in mind
+INSTANCES = 1 # Views that you will be getting | This is the number of Threads keep this in mind
 INSTANCE_MULTIPLIER = 2 # Views = INSTANCE_MULTIPLIER * INSTANCES
-URL = 'https://www.youtube.com/watch?v=NZ03VDWQQt4'
+URL = 'https://www.youtube.com/watch?v=AhYOtVVSKfo'
 VIDEO_LENGTH = 80 # In Seconds
 
 
@@ -61,10 +68,13 @@ for iteration in range(INSTANCE_MULTIPLIER):
         try:
             threading.Thread(target=view_increase, args=(URL,)).start()
             print('[-] Success for instance {}'.format( count ))
+            logger.info('[-] Success for instance {}'.format( count ))
         except Exception as e:
             print('[!] Instance {} has failed'.format( count ))
+            logger.info('[!] Instance {} has failed'.format( count ))
+            logger.error(str(e))
         
-        count += 1
+        count += 1  
         sleep(1)
     
     if threading.active_count() > 2: # 1 is main thread
