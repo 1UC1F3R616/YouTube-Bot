@@ -1,14 +1,12 @@
 """
-# Setting Up the Proxy:
-- Current setup is fetching proxy from fastProxy file
-    - You may pipe-in your own proxies or setup tor proxy on http protocol using pproxy and use that (Refer related video on YouTube)
-- Uncomment chrome_options for proxy
-- Comment the proxies just above url so to feed proxy
-# Use no_proxy_youtube_bot.py if you are not understanding this code
-    - it will be using ur ip (No Proxy Minimal Setup)
-# Use proxy_youtube_bot.py for minimal proxy setup
-"""
+# Note:
+- No Proxy is used in this file (Completly purged, reasons told on Attached YouTube Video)
+- Using Same IP can get your ip banned or restrictions will be applied from YouTube
+- To know how you can setup proxy, check-out pro_youtube_bot.py
 
+# Configuration settings has to be configured accordingly
+# It's thoroughly tested by 1UC1F3R616 on 21-10-2020
+"""
 
 import os
 import threading
@@ -19,9 +17,22 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 
-def view_increase(url=None, proxy=None):
-    if not (url and proxy):
-        print('[!] URL or PROXY is missing')
+
+# Configuration
+CHROME_BINARY_PATH = 'chromedriver.exe' # If in the same directory as of this script
+INSTANCES = 2 # Views that you will be getting | This is the number of Threads keep this in mind
+INSTANCE_MULTIPLIER = 2 # Views = INSTANCE_MULTIPLIER * INSTANCES
+URL = 'https://www.youtube.com/watch?v=NZ03VDWQQt4'
+VIDEO_LENGTH = 80 # In Seconds
+
+
+def view_increase(url=None):
+    """
+    :args:
+    url: URL of the YouTube video
+    """
+    if not (url):
+        print('[!] URL is missing')
         return
 
     chrome_options = Options()
@@ -32,34 +43,30 @@ def view_increase(url=None, proxy=None):
     chrome_options.add_argument('--disable-dev-shm-usage')   
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument("--mute-audio")
-    #chrome_options.add_argument('--proxy-server={}'.format(proxy))
 
-    driver = webdriver.Chrome(executable_path=os.path.abspath('chromedriver.exe'), chrome_options=chrome_options)
-    actions = ActionChains(driver)
-
+    driver = webdriver.Chrome(executable_path=os.path.abspath(CHROME_BINARY_PATH), chrome_options=chrome_options)
+    actions = ActionChains(driver) # To start the video by sending shortcut-key 'k'
 
     driver.get(url)
-    sleep(2)
+    driver.implicitly_wait(2)
     actions.send_keys('k')
     sleep(1)
     actions.perform()
-    sleep(80)
+    sleep(VIDEO_LENGTH)
     driver.close()
 
-# Proxy Setup
-import fastProxy as p
-p.THREAD_COUNT = 56
-p.REQUEST_TIMEOUT = 1
-p.GENERATE_CSV = False
-p.ALL_IPS = False
-proxies = p.fetch_proxies()
-proxies=range(5) # number of instances, this will switch to your own ip ie. No Proxy Mode
-url = 'https://www.youtube.com/watch?v=AhYOtVVSKfo'
-for proxy in proxies:
-    try:
-        proxy_feed = 'http://{}'.format(proxy)
-        threading.Thread(target=view_increase, args=(url,proxy_feed)).start()
-        print('[-] Success for {}'.format(proxy_feed))
-    except Exception as e:
-        print('[!] Chrome instance {} has failed'.format(proxy))
-    sleep(1)
+count = 1
+for iteration in range(INSTANCE_MULTIPLIER):
+    for instance in range(INSTANCES):
+        try:
+            threading.Thread(target=view_increase, args=(URL,)).start()
+            print('[-] Success for instance {}'.format( count ))
+        except Exception as e:
+            print('[!] Instance {} has failed'.format( count ))
+        
+        count += 1
+        sleep(1)
+    
+    if threading.active_count() > 2: # 1 is main thread
+        sleep(VIDEO_LENGTH)
+    
