@@ -27,4 +27,4 @@
 ## Note
 - Number of Instances should be kept low as each instance will be running on seprate chrome driver
   - Yes, I too see scope of improvement here
- 
+- If you are not using proxy (to generate traffic from different sources) then views will reset after 24 hours, Yes it is what it is :')
