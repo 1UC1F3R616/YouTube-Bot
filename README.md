@@ -5,6 +5,11 @@
 <img src="https://user-images.githubusercontent.com/41824020/96672778-aa5f9880-1382-11eb-99b6-15213827938a.jpg" width=650 height=350>
 </p>
 
+## What this does
+- [x] Increase Views on YouTube Uploads
+- [x] Increase Viewership on YouTube Premiers
+- [x] Increase Viewership on YouTube Live Streams
+
 ## Quick Start Guide
 - clone the repo
 - pip install selenium
